@@ -1,0 +1,12 @@
+
+autom4te.cache/
+config.log
+config.status
+Makefile
+
+elda
+
+*.conf
+*.service
+
+!*.in
