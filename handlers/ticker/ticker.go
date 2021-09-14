@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"elda-go/def"
+	"elda/def"
 )
 
 // any name

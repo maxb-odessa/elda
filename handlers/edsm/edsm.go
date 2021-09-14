@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"elda-go/def"
+	"elda/def"
 )
 
 var buf string

@@ -8,7 +8,7 @@
 #
 
 source
-    handler stdin
+    handler terminal
     name IN
 
 source
@@ -17,22 +17,23 @@ source
     var dir @HOME@/.ed/journal/
     var mask ^Journal\.\d+\.\d+\.log$
 
-action
-    name XDOLOCAL
-    handler xdo            
-    var display :0.0          
-    var window edpad-text
+# TODO
+#action
+#    name XDOLOCAL
+#    handler xdo            
+#    var display :0.0          
+#    var window edpad-text
 
-action
-    name LOG
-    handler fileout
-    var path @HOME@/.ed/elda-go.log
-    var truncate yes
-    var create yes
+#action
+#    name LOGFILE
+#    handler fileout
+#    var path @HOME@/.ed/elda-go.log
+#    var truncate yes
+#    var create yes
 
 action
     name OUT
-    handler stdout
+    handler terminal
 
 source
     name TICK10S
@@ -45,26 +46,31 @@ source
 #    handler pipein
 #    var path /tmp/elda-go-out.pipe
 
-#action
-#    name PIPE
-#    handler pipeout
-#    var path /tmp/x52-in.pipe
+action
+    name LOG
+    handler fileout
+    var path /tmp/elda.pipe
+    var pipe yes
+    var create yes
 
+# TODO
 #action
 #    name IGAU
 #    handler igau
 #    var url https://igau.some.url.here
 #    var api_token 12345
 
-action
-    name EDSM-POST-JOURNAL
-    handler edsm
-    var url             https://www.edsm.net/api-journal-v1
-    var api_key         1111111 
-    var commander       me11111
-    var software_name   test
-    var software_ver    0.0.1
+# TEST
+#action
+#    name EDSM-POST-JOURNAL
+#    handler edsm
+#    var url             https://www.edsm.net/api-journal-v1
+#    var api_key         1111111 
+#    var commander       me11111
+#    var software_name   test
+#    var software_ver    0.0.1
 
+# TODO
 #source
 #    name EDSM-GET-BODIES
 #    handler edsm
@@ -89,9 +95,9 @@ action
 #    action OUT got from EDSM $0
 
 
-event
-    source JOURNAL "event":"(StartJump|FSDJump|FSDTarget|Scan|SAASignalsFound)",
-    action EDSM-POST-JOURNAL $0
+#event
+#    source JOURNAL "event":"(StartJump|FSDJump|FSDTarget|Scan|SAASignalsFound)",
+#    action EDSM-POST-JOURNAL $0
 
 event
     source JOURNAL "event":"FSSDiscoveryScan".+"BodyCount":([0-9]+), "NonBodyCount":([0-9]+),
@@ -170,6 +176,7 @@ event
 
 event
     source IN ^CONNECTED$
+    action LOG Yep, Connected!\n
     action OUT mfd 1 "Hello,"
     action OUT mfd 2 " commander"
     action OUT mfd 3 "  Vessae!"

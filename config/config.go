@@ -7,9 +7,9 @@ import (
 	"strings"
 	"unicode"
 
-	"elda-go/action"
-	"elda-go/events"
-	"elda-go/source"
+	"elda/action"
+	"elda/events"
+	"elda/source"
 )
 
 type Cfg struct {

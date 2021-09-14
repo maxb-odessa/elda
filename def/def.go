@@ -25,7 +25,7 @@ type ChanMsg struct {
 }
 
 func init() {
-	ConfFile = os.Getenv("HOME") + "/" + ".local/etc/elda-go.conf"
+	ConfFile = os.Getenv("HOME") + "/" + ".local/etc/elda.conf"
 }
 
 func GetStrVar(vars map[string]string, varname string) (string, error) {

@@ -11,8 +11,8 @@ import (
 	"github.com/nxadm/tail"
 	"github.com/radovskyb/watcher"
 
-	"elda-go/def"
-	"elda-go/log"
+	"elda/def"
+	"elda/log"
 )
 
 // any name

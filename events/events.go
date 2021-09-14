@@ -8,10 +8,10 @@ import (
 	"strings"
 	"syscall"
 
-	"elda-go/action"
-	"elda-go/def"
-	"elda-go/log"
-	"elda-go/source"
+	"elda/action"
+	"elda/def"
+	"elda/log"
+	"elda/source"
 )
 
 type evAction struct {
