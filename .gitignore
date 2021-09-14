@@ -1,0 +1,9 @@
+
+
+*.conf
+*.service
+
+pkg/
+bin/
+
+!*.in

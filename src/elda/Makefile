@@ -1,0 +1,17 @@
+
+PREFIX	=	/home/vesemir/.local
+
+GO111MODULE	=	auto
+GOBIN		=	${PREFIX}/bin
+
+all:
+	go build -o elda-go
+
+install: all
+	go env -w GOBIN=${GOBIN}
+	go install
+	cp -f elda-go.conf ${PREFIX}/etc
+
+install-service: x52mfd.service
+	cp -f x52mfd.service /home/vesemir/.config/systemd/user
+	systemctl --user daemon-reload
