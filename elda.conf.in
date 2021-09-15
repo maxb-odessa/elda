@@ -185,8 +185,9 @@ event
     action OUT blink off
     action OUT led a red
     action OUT led b red
-    action OUT led t1 amber
-    action OUT led t2 amber
+    action OUT led d red
+    action OUT led t1 green
+    action OUT led t2 red
     action OUT led t3 amber
     action OUT clock local 24hr ddmmyy
     action OUT update

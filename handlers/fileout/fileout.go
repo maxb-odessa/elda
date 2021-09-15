@@ -57,8 +57,6 @@ func (self *handler) Init(vars map[string]string) error {
 
 	if !isPipe {
 		self.fp.Seek(0, os.SEEK_END)
-	} else {
-		syscall.SetNonblock(int(self.fp.Fd()), true)
 	}
 
 	return nil
