@@ -15,7 +15,8 @@ type handler struct {
 	typ  int
 
 	// optional
-	fp *os.File
+	fp     *os.File
+	isPipe bool
 }
 
 // register us
@@ -35,16 +36,16 @@ func (self *handler) Init(vars map[string]string) error {
 		return err
 	}
 
-	isPipe := def.IsVarSetAndYes(vars, "pipe")
+	self.isPipe = def.IsVarSetAndYes(vars, "pipe")
 
 	flags := os.O_RDWR
 
-	if def.IsVarSetAndYes(vars, "truncate") && !isPipe {
+	if def.IsVarSetAndYes(vars, "truncate") && !self.isPipe {
 		flags |= os.O_TRUNC
 	}
 
 	if def.IsVarSetAndYes(vars, "create") {
-		if isPipe {
+		if self.isPipe {
 			syscall.Mkfifo(path, 0666)
 		} else {
 			flags |= os.O_CREATE
@@ -55,7 +56,7 @@ func (self *handler) Init(vars map[string]string) error {
 		return err
 	}
 
-	if !isPipe {
+	if !self.isPipe {
 		self.fp.Seek(0, os.SEEK_END)
 	}
 
@@ -71,8 +72,13 @@ func (self *handler) Type() int {
 }
 
 func (self *handler) Push(s string) error {
-	_, err := self.fp.WriteString(s)
-	self.fp.Sync()
+
+	_, err := self.fp.WriteString(s + "\n")
+
+	if !self.isPipe {
+		self.fp.Sync()
+	}
+
 	return err
 }
 

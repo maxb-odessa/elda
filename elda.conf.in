@@ -9,20 +9,13 @@
 
 source
     handler terminal
-    name IN
+    name JOYIN
 
 source
     name JOURNAL
     handler filein
     var dir @HOME@/.ed/journal/
     var mask ^Journal\.\d+\.\d+\.log$
-
-# TODO
-#action
-#    name XDOLOCAL
-#    handler xdo            
-#    var display :0.0          
-#    var window edpad-text
 
 #action
 #    name LOGFILE
@@ -32,7 +25,7 @@ source
 #    var create yes
 
 action
-    name OUT
+    name JOYOUT
     handler terminal
 
 source
@@ -47,149 +40,129 @@ source
 #    var path /tmp/elda-go-out.pipe
 
 action
-    name LOG
+    name EDPAD
     handler fileout
-    var path /tmp/elda.pipe
+    var path /tmp/ed.pipe
     var pipe yes
     var create yes
-
-# TODO
-#action
-#    name IGAU
-#    handler igau
-#    var url https://igau.some.url.here
-#    var api_token 12345
-
-# TEST
-#action
-#    name EDSM-POST-JOURNAL
-#    handler edsm
-#    var url             https://www.edsm.net/api-journal-v1
-#    var api_key         1111111 
-#    var commander       me11111
-#    var software_name   test
-#    var software_ver    0.0.1
-
-# TODO
-#source
-#    name EDSM-GET-BODIES
-#    handler edsm
-#    var url             https://www.edsm.net/api-system-v1/bodies
-
-
 
 
 # $0 = whole match string, $1..$9 = submatches (if any)
 
-#event
-#    source IN .*
-#    action IGAU $0
-#    action EDSM-SEND AAA $0
-
-
-
-# TEST!!
-# 
-#event
-#    source EDSM-GET-BODIES .+
-#    action OUT got from EDSM $0
-
-
-#event
-#    source JOURNAL "event":"(StartJump|FSDJump|FSDTarget|Scan|SAASignalsFound)",
-#    action EDSM-POST-JOURNAL $0
-
 event
     source JOURNAL "event":"FSSDiscoveryScan".+"BodyCount":([0-9]+), "NonBodyCount":([0-9]+),
-    action OUT mfd 3 "Signals: $1/$2"
-    action OUT update
-    action LOG | Signals:    $1/$2\n
+    action JOYOUT   mfd 3 "Signals: $1/$2"
+    action JOYOUT   update
+    action EDPAD    view3 Signals: $1/$2\n
 
 event
     source TICK10S tick 10 seconds
-    action OUT clock local 24hr ddmmyy
-    action OUT update
+    action JOYOUT   clock local 24hr ddmmyy
+    action JOYOUT   update
 
 event
     source JOURNAL "event":"FSDJump", "Taxi":false,
-    action OUT bri led 30%
-    action OUT bri mfd 30%
-    action OUT update
+    action JOYOUT   bri led 30%
+    action JOYOUT   bri mfd 30%
+    action JOYOUT   update
 
 event
-    source JOURNAL "event":"StartJump", "JumpType":"Hyperspace", "StarSystem":"([a-zA-Z -]+) ([a-zA-Z]{1}\d+-?\d*)",.+"StarClass":"(\w)"
-    action OUT mfd 2 " $3,$2"
-    action OUT bri led 5%
-    action OUT bri mfd 5%
-    action OUT update
+    source JOURNAL "JumpType":"Hyperspace", "StarSystem":"([a-zA-Z -]+) ([a-zA-Z]{1}\d+-?\d*)",.+"StarClass":"(\w)"
+    action JOYOUT   mfd 2 " $3,$2"
+    action JOYOUT   bri led 5%
+    action JOYOUT   bri mfd 5%
+    action JOYOUT   update
 
 event
     source JOURNAL "event":"FSDTarget", "Name":"([a-zA-Z -]+) ([a-zA-Z]{1}\d+-?\d*)", .+"StarClass":"(.+)", "RemainingJumpsInRoute":(\d+)
-    action OUT mfd 1 "~$3,$2 ($4)"
-    action OUT mfd 3 "not scanned"
-    action OUT update
-    action LOG \n\n
-    action LOG  Next Jump Target: $3, $2, Jumps left: $4\n
+    action JOYOUT   mfd 1 "~$3,$2 ($4)"
+    action JOYOUT   mfd 3 "not scanned"
+    action JOYOUT   update
+    action EDPAD    view1 Next Jump: $3, $2, Jumps left: $4\n
 
 event
     source JOURNAL "event":"Scan", "ScanType":".+", "BodyName":"([a-zA-Z -]+) ([a-zA-Z]{1}\d+-?\d*)(| [aA]+)", .+"StarType":"(\w+)", "Subclass":(\d+), .+"WasDiscovered":(\w+), "
-    action OUT mfd 2 " $4,$2,$6"
-    action OUT update
-    action LOG \n
-    action LOG | Class:      $4$5\n
-    action LOG | Name:       $1 $2\n
-    action LOG | Discovered: $6\n
+    action JOYOUT   mfd 2 " $4,$2,$6"
+    action JOYOUT   update
+    action EDPAD    view2 \n
+    action EDPAD    view2 Name:       $1 $2\n
+    action EDPAD    view2 Discovered: $6\n
+    action EDPAD    view2 Class:      $4$5\n
 
 event
     source JOURNAL "event":"Scan", "ScanType":".+", "BodyName":"([a-zA-Z -]+) ([a-zA-Z]{1}\d+-?\d*) [0-9b-zB-Z ]+", .+"StarType":"(\w+)", "Subclass":(\d+), .+"WasDiscovered":(\w+), "
-    action LOG |-> Star: $3$4\n
+    action EDPAD    view2 Satellite:  $3$4\n
 
 event
     source JOURNAL "event":"DockingGranted",
-    action OUT blink on
-    action OUT update
+    action JOYOUT   blink on
+    action JOYOUT   update
 
 event
     source JOURNAL "event":"Docked",
-    action OUT blink off
-    action OUT update
+    action JOYOUT   blink off
+    action JOYOUT   update
 
 event
     source JOURNAL "event":"SAASignalsFound", "BodyName":"(.+)", "SystemAddress":.+"Signals":\[.+"Guardian", "Count":(\d+)
-    action LOG |-> Body: $1, Guardian signals: $2\n
+    action EDPAD    view3 Body: $1, Guardian signals: $2\n
 
 event
     source JOURNAL "event":"SAASignalsFound", "BodyName":"(.+)", "SystemAddress":.+"Signals":\[.+"Human", "Count":(\d+)
-    action LOG |-> Body: $1, Human signals: $2\n
+    action EDPAD    view3 Body: $1, Human signals: $2\n
 
 event
     source JOURNAL "event":"FSSSignalDiscovered",.+"SignalName_Localised":\s?"Nonhuman signal source",
-    action LOG |-> NonHuman signal found\n
+    action EDPAD    view3 NonHuman signal found\n
 
 event
     source JOURNAL "event":"FSSSignalDiscovered",.+"SignalName_Localised":\s?"Notable stellar phenomena"
-    action LOG |-> Stellar Phenomena found\n
+    action EDPAD    view3 Stellar Phenomena found\n
 
 event
     source JOURNAL "event":"FSSSignalDiscovered",.+"SignalName_Localised":\s?"CAPITAL SHIP"
-    action LOG |-> Capital Ship detected\n
+    action EDPAD    view3 Capital Ship detected\n
 
 event
-    source IN ^CONNECTED$
-    action LOG Yep, Connected!\n
-    action OUT mfd 1 "Hello,"
-    action OUT mfd 2 " commander"
-    action OUT mfd 3 "  Vessae!"
-    action OUT bri led 30% 
-    action OUT bri mfd 30%
-    action OUT blink off
-    action OUT led a red
-    action OUT led b red
-    action OUT led d red
-    action OUT led t1 green
-    action OUT led t2 red
-    action OUT led t3 amber
-    action OUT clock local 24hr ddmmyy
-    action OUT update
+    source JOYIN ^CONNECTED$
+    action EDPAD    view1 Yep, Connected!\n
+    action EDPAD    view2 Connected!\n
+    action EDPAD    view3 Indeed, Connected!\n
+    action JOYOUT   mfd 1 "Hello,"
+    action JOYOUT   mfd 2 " commander"
+    action JOYOUT   mfd 3 "  Vessae!"
+    action JOYOUT   bri led 30% 
+    action JOYOUT   bri mfd 30%
+    action JOYOUT   blink off
+    action JOYOUT   led a red
+    action JOYOUT   led b red
+    action JOYOUT   led d red
+    action JOYOUT   led t1 green
+    action JOYOUT   led t2 red
+    action JOYOUT   led t3 amber
+    action JOYOUT   clock local 24hr ddmmyy
+    action JOYOUT   update
 
+event 
+    source JOYIN 1
+    action EDPAD view1 text 11\n
+    action EDPAD view2 text 21
+    action EDPAD view3 text 31\n
 
+event
+    source JOYIN 2
+    action EDPAD view1 text 12\n
+    action EDPAD view2 text 22
+    action EDPAD view3 text 32\n
+
+event
+    source JOYIN 3
+    action EDPAD view1 text 13\n\n
+    action EDPAD view2 text 23\n
+    action EDPAD view3 text 33\n\n
+
+event
+    source JOYIN 4
+    action EDPAD clear1
+    action EDPAD clear2
+    action EDPAD clear3

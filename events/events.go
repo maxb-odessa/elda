@@ -91,11 +91,13 @@ func process(srcMsg *def.ChanMsg, events []*Event) {
 				data = strings.ReplaceAll(data, "$"+strconv.Itoa(idx), sub)
 			}
 
+			/* NOTE: let consumer process that cases
 			// replace escape sequences
 			data = strings.ReplaceAll(data, `\n`, "\n")
 			data = strings.ReplaceAll(data, `\r`, "\r")
 			data = strings.ReplaceAll(data, `\t`, "\t")
 			data = strings.ReplaceAll(data, `\\`, "\\")
+			*/
 
 			actMsg := &def.ChanMsg{Name: srcMsg.Name, Data: data}
 

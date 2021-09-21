@@ -1,6 +1,7 @@
 
+ file: send whole match string, send joy actions (pg-up, pg-down, etc)
+
  add buffers for events
- src/act IGAU + EDSM handlers
 
  docs in config
  README.md

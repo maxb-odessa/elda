@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 const (
@@ -74,4 +75,25 @@ func SendMsg(ch chan *ChanMsg, msg *ChanMsg) (ok bool) {
 	ch <- msg
 
 	return true
+}
+
+// split string into N tokens separated by blank(s)
+func FieldsN(str string, n int) []string {
+	count := 0
+	prevSep := false
+
+	return strings.FieldsFunc(str, func(r rune) bool {
+		if count >= n-1 {
+			return false
+		}
+		if unicode.IsSpace(r) {
+			if prevSep == false {
+				count++
+				prevSep = true
+			}
+			return true
+		}
+		prevSep = false
+		return false
+	})
 }
