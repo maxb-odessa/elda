@@ -9,10 +9,6 @@ import (
 	"elda/handlers/ticker"
 
 	"elda/handlers/fileout"
-	"elda/handlers/xdo"
-
-	"elda/handlers/edsm"
-	"elda/handlers/igau"
 )
 
 type Handler interface {
@@ -34,11 +30,6 @@ func init() {
 
 		filein.Register(),
 		fileout.Register(),
-
-		xdo.Register(),
-
-		edsm.Register(),
-		igau.Register(),
 	}
 }
 

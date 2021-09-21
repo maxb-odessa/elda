@@ -143,26 +143,3 @@ event
     action JOYOUT   clock local 24hr ddmmyy
     action JOYOUT   update
 
-event 
-    source JOYIN 1
-    action EDPAD view1 text 11\n
-    action EDPAD view2 text 21
-    action EDPAD view3 text 31\n
-
-event
-    source JOYIN 2
-    action EDPAD view1 text 12\n
-    action EDPAD view2 text 22
-    action EDPAD view3 text 32\n
-
-event
-    source JOYIN 3
-    action EDPAD view1 text 13\n\n
-    action EDPAD view2 text 23\n
-    action EDPAD view3 text 33\n\n
-
-event
-    source JOYIN 4
-    action EDPAD clear1
-    action EDPAD clear2
-    action EDPAD clear3
