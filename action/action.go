@@ -3,9 +3,9 @@ package action
 import (
 	"fmt"
 
-	"elda-go/def"
-	"elda-go/handlers"
-	"elda-go/log"
+	"elda/def"
+	"elda/handlers"
+	"elda/log"
 )
 
 type Action struct {

@@ -5,10 +5,10 @@ import (
 	"os"
 	"sync"
 
-	"elda-go/config"
-	"elda-go/def"
-	"elda-go/events"
-	"elda-go/log"
+	"elda/config"
+	"elda/def"
+	"elda/events"
+	"elda/log"
 )
 
 // TODO show some help

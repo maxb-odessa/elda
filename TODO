@@ -1,6 +1,3 @@
 
- add buffers for events
- src/act IGAU + EDSM handlers
+ - add named buffers for events
 
- docs in config
- README.md

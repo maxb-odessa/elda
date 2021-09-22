@@ -3,18 +3,12 @@ package handlers
 import (
 	"reflect"
 
-	"elda-go/handlers/filein"
-	"elda-go/handlers/pipein"
-	"elda-go/handlers/stdin"
-	"elda-go/handlers/ticker"
+	"elda/handlers/terminal"
 
-	"elda-go/handlers/fileout"
-	"elda-go/handlers/pipeout"
-	"elda-go/handlers/stdout"
-	"elda-go/handlers/xdo"
+	"elda/handlers/filein"
+	"elda/handlers/ticker"
 
-	"elda-go/handlers/edsm"
-	"elda-go/handlers/igau"
+	"elda/handlers/fileout"
 )
 
 type Handler interface {
@@ -30,18 +24,12 @@ var registeredHandlers []Handler
 
 func init() {
 	registeredHandlers = []Handler{
-		filein.Register(),
-		pipein.Register(),
-		stdin.Register(),
+		terminal.Register(),
+
 		ticker.Register(),
 
+		filein.Register(),
 		fileout.Register(),
-		pipeout.Register(),
-		stdout.Register(),
-		xdo.Register(),
-
-		edsm.Register(),
-		igau.Register(),
 	}
 }
 

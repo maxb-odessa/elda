@@ -3,8 +3,9 @@ package fileout
 import (
 	"fmt"
 	"os"
+	"syscall"
 
-	"elda-go/def"
+	"elda/def"
 )
 
 // any name
@@ -14,7 +15,8 @@ type handler struct {
 	typ  int
 
 	// optional
-	fp *os.File
+	fp     *os.File
+	isPipe bool
 }
 
 // register us
@@ -34,21 +36,29 @@ func (self *handler) Init(vars map[string]string) error {
 		return err
 	}
 
-	flags := os.O_WRONLY
+	self.isPipe = def.IsVarSetAndYes(vars, "pipe")
 
-	if def.IsVarSetAndYes(vars, "truncate") {
+	flags := os.O_RDWR
+
+	if def.IsVarSetAndYes(vars, "truncate") && !self.isPipe {
 		flags |= os.O_TRUNC
 	}
 
 	if def.IsVarSetAndYes(vars, "create") {
-		flags |= os.O_CREATE
+		if self.isPipe {
+			syscall.Mkfifo(path, 0666)
+		} else {
+			flags |= os.O_CREATE
+		}
 	}
 
 	if self.fp, err = os.OpenFile(path, flags, 0666); err != nil {
 		return err
 	}
 
-	self.fp.Seek(0, os.SEEK_END)
+	if !self.isPipe {
+		self.fp.Seek(0, os.SEEK_END)
+	}
 
 	return nil
 }
@@ -62,8 +72,13 @@ func (self *handler) Type() int {
 }
 
 func (self *handler) Push(s string) error {
-	_, err := self.fp.WriteString(s)
-	self.fp.Sync()
+
+	_, err := self.fp.WriteString(s + "\n")
+
+	if !self.isPipe {
+		self.fp.Sync()
+	}
+
 	return err
 }
 

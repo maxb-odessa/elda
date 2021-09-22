@@ -1,4 +1,4 @@
-module elda-go
+module elda
 
 go 1.16
 

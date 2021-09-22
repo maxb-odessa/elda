@@ -7,9 +7,10 @@ import (
 	"strings"
 	"unicode"
 
-	"elda-go/action"
-	"elda-go/events"
-	"elda-go/source"
+	"elda/action"
+	"elda/def"
+	"elda/events"
+	"elda/source"
 )
 
 type Cfg struct {
@@ -120,7 +121,7 @@ func (self *Cfg) parseSource() (err error) {
 		line = strings.TrimSpace(line)
 
 		// we expect "keyword key value..."
-		tokens := fieldsN(line, 3)
+		tokens := def.FieldsN(line, 3)
 		switch len(tokens) {
 		case 1:
 			err = fmt.Errorf("incomplete line")
@@ -184,7 +185,7 @@ func (self *Cfg) parseAction() (err error) {
 		line = strings.TrimSpace(line)
 
 		// we expect "keyword key value..."
-		tokens := fieldsN(line, 3)
+		tokens := def.FieldsN(line, 3)
 		switch len(tokens) {
 		case 1:
 			err = fmt.Errorf("incomplete line")
@@ -247,7 +248,7 @@ func (self *Cfg) parseEvent() (err error) {
 		line = strings.TrimSpace(line)
 
 		// we expect "keyword key value..."
-		tokens := fieldsN(line, 3)
+		tokens := def.FieldsN(line, 3)
 		if len(tokens) < 3 {
 			err = fmt.Errorf("incomplete line")
 			return
@@ -257,13 +258,13 @@ func (self *Cfg) parseEvent() (err error) {
 		switch tokens[0] {
 		case "source":
 			if s, ok := self.sources[tokens[1]]; ok {
-				err = ev.SetSource(s, tokens[2])
+				err = ev.SetSource(s, strings.TrimSpace(tokens[2]))
 			} else {
 				err = fmt.Errorf("undefine source '%s'", tokens[1])
 			}
 		case "action":
 			if a, ok := self.actions[tokens[1]]; ok {
-				err = ev.AddAction(a, tokens[2])
+				err = ev.AddAction(a, strings.TrimSpace(tokens[2]))
 			} else {
 				err = fmt.Errorf("undefine action '%s'", tokens[1])
 			}
@@ -278,24 +279,4 @@ func (self *Cfg) parseEvent() (err error) {
 	}
 
 	return nil
-}
-
-func fieldsN(str string, n int) []string {
-	count := 0
-	prevSep := false
-
-	return strings.FieldsFunc(str, func(r rune) bool {
-		if count >= n-1 {
-			return false
-		}
-		if unicode.IsSpace(r) {
-			if prevSep == false {
-				count++
-				prevSep = true
-			}
-			return true
-		}
-		prevSep = false
-		return false
-	})
 }
