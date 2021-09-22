@@ -1,7 +1,3 @@
 
- file: send whole match string, send joy actions (pg-up, pg-down, etc)
+ - add named buffers for events
 
- add buffers for events
-
- docs in config
- README.md
