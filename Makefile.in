@@ -1,0 +1,17 @@
+
+PREFIX	=	@HOME@/.local
+
+GO111MODULE	=	auto
+GOBIN		=	${PREFIX}/bin
+
+all:
+	go build -o elda
+
+install: all
+	go env -w GOBIN=${GOBIN}
+	go install
+	cp -f elda.conf ${PREFIX}/etc
+
+install-service: x52mfd.service
+	cp -f x52mfd.service @HOME@/.config/systemd/user
+	systemctl --user daemon-reload
