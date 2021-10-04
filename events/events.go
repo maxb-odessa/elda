@@ -4,8 +4,6 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
-	"strconv"
-	"strings"
 	"syscall"
 
 	"elda/action"
@@ -37,7 +35,16 @@ func Run(sources map[string]*source.Source, actions map[string]*action.Action, e
 		}
 	}()
 
-	srcChan := source.GetChan()
+	srcChan := make(chan *def.ChanMsg)
+
+	for _, src := range sources {
+		ch := src.GetChan()
+		go func(c chan *def.ChanMsg) {
+			for msg := range c {
+				srcChan <- msg
+			}
+		}(ch)
+	}
 
 	for {
 
@@ -73,34 +80,23 @@ func process(srcMsg *def.ChanMsg, events []*Event) {
 		}
 
 		// match event by pattern
-		log.Debug("event matching '%s' to '%v'\n", srcMsg.Data, ev.pattern)
+		log.Debug("event: matching source data '%s' to pattern '%v'\n", srcMsg.Data, ev.pattern)
 		if ok := ev.pattern.MatchString(srcMsg.Data); !ok {
-			log.Debug("event not matched '%s'\n", srcMsg.Data)
+			log.Debug("event: not matched\n")
 			continue
+		} else {
+			log.Debug("event: matched!\n")
 		}
-
-		subs := ev.pattern.FindStringSubmatch(srcMsg.Data)
-		log.Debug("event match regex subs: <%v>\n", subs)
 
 		// send message to all actions
 		for _, ea := range ev.actions {
-			data := ea.data
 
 			// replace regex submatches
-			for idx, sub := range subs {
-				data = strings.ReplaceAll(data, "$"+strconv.Itoa(idx), sub)
-			}
+			data := ev.pattern.ReplaceAllString(srcMsg.Data, ea.data)
+			log.Debug("event: data after subs replacing: <%s>\n", data)
 
-			/* NOTE: let consumer process that cases
-			// replace escape sequences
-			data = strings.ReplaceAll(data, `\n`, "\n")
-			data = strings.ReplaceAll(data, `\r`, "\r")
-			data = strings.ReplaceAll(data, `\t`, "\t")
-			data = strings.ReplaceAll(data, `\\`, "\\")
-			*/
-
+			// send modified event data to action
 			actMsg := &def.ChanMsg{Name: srcMsg.Name, Data: data}
-
 			select {
 			case ea.action.GetChan() <- actMsg:
 				log.Debug("event sending '%+v' to action '%s'\n", actMsg, ea.action.Name())
@@ -113,8 +109,7 @@ func process(srcMsg *def.ChanMsg, events []*Event) {
 }
 
 func New() *Event {
-	e := new(Event)
-	return e
+	return new(Event)
 }
 
 func (self *Event) SetSource(src *source.Source, pattern string) (err error) {

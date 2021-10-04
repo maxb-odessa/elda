@@ -13,27 +13,23 @@ type Source struct {
 	vars    map[string]string
 	handler handlers.Handler
 	doneCh  chan bool
-}
-
-var outChan chan *def.ChanMsg
-
-func init() {
-	outChan = make(chan *def.ChanMsg, def.SRC_CHAN_LEN)
-}
-
-func GetChan() chan *def.ChanMsg {
-	return outChan
+	outChan chan *def.ChanMsg
 }
 
 func New() *Source {
 	src := new(Source)
 	src.vars = make(map[string]string)
 	src.doneCh = make(chan bool)
+	src.outChan = make(chan *def.ChanMsg, def.SRC_CHAN_LEN)
 	return src
 }
 
 func (self *Source) Name() string {
 	return self.name
+}
+
+func (self *Source) GetChan() chan *def.ChanMsg {
+	return self.outChan
 }
 
 func (self *Source) SetName(name string) error {
@@ -107,7 +103,7 @@ func (self *Source) Run() {
 
 			log.Debug("source '%s' sending msg '%v'\n", self.name, msg)
 
-			if writeChan(outChan, msg) == false {
+			if writeChan(self.outChan, msg) == false {
 				log.Err("source '%s' failed to send data: %v\n", self.name, err)
 				return
 			}

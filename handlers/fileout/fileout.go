@@ -75,9 +75,9 @@ func (self *handler) Push(s string) error {
 
 	_, err := self.fp.WriteString(s + "\n")
 
-	if !self.isPipe {
-		self.fp.Sync()
-	}
+	//if !self.isPipe {
+	self.fp.Sync()
+	//}
 
 	return err
 }
