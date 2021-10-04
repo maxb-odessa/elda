@@ -4,6 +4,8 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strconv"
+	"strings"
 	"syscall"
 
 	"elda/action"
@@ -84,16 +86,23 @@ func process(srcMsg *def.ChanMsg, events []*Event) {
 		if ok := ev.pattern.MatchString(srcMsg.Data); !ok {
 			log.Debug("event: not matched\n")
 			continue
-		} else {
-			log.Debug("event: matched!\n")
 		}
+
+		log.Debug("event: matched!\n")
+		subs := ev.pattern.FindStringSubmatch(srcMsg.Data)
+		log.Debug("event match regex subs: <%v>\n", subs)
 
 		// send message to all actions
 		for _, ea := range ev.actions {
 
+			// treat $$ as single $
+			// TODO: how to deal with substrings like '$$2'? ($$)2 or $($2) ?
+			data := strings.ReplaceAll(ea.data, `$$`, `$`)
+
 			// replace regex submatches
-			data := ev.pattern.ReplaceAllString(srcMsg.Data, ea.data)
-			log.Debug("event: data after subs replacing: <%s>\n", data)
+			for idx, sub := range subs {
+				data = strings.ReplaceAll(data, "$"+strconv.Itoa(idx), sub)
+			}
 
 			// send modified event data to action
 			actMsg := &def.ChanMsg{Name: srcMsg.Name, Data: data}
