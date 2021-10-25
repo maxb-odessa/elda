@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"sync"
+
+	"github.com/pborman/getopt/v2"
 
 	"elda/config"
 	"elda/def"
@@ -11,38 +12,28 @@ import (
 	"elda/log"
 )
 
-// TODO show some help
-func showHelp(progname string) {
-	fmt.Fprintf(os.Stderr,
-		"Usage:\n%s [config file]\n"+
-			"Default config file is '%s'\n",
-		progname,
-		def.ConfFile)
-}
-
 // the main part
 func main() {
 
-	var confFile string
-
 	// get config file path
-	switch len(os.Args) {
-	case 1:
-		confFile = def.ConfFile
-	case 2:
-		confFile = os.Args[1]
-	default:
-		showHelp(os.Args[0])
-		os.Exit(1)
+	help := false
+	getopt.HelpColumn = 0
+	getopt.FlagLong(&help, "help", 'h', "Show this help")
+	getopt.FlagLong(&def.Debug, "debug", 'd', "Enable debug mode")
+	getopt.FlagLong(&def.ConfFile, "config", 'c', "Path to config file")
+	getopt.Parse()
+	if help {
+		getopt.Usage()
+		return
 	}
 
 	// read config
-	cfg, err := config.New(confFile)
+	cfg, err := config.New(def.ConfFile)
 	if err != nil {
-		log.Err("Config file '%s' error: %v\n", confFile, err)
+		log.Err("Config file '%s' error: %v\n", def.ConfFile, err)
 		os.Exit(2)
 	} else if err = cfg.Parse(); err != nil {
-		log.Err("Failed to parse config file '%s': %v\n", confFile, err)
+		log.Err("Failed to parse config file '%s': %v\n", def.ConfFile, err)
 		os.Exit(3)
 	}
 

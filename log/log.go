@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"elda/def"
 )
 
 // log error message
@@ -28,7 +30,7 @@ func Warn(format string, args ...interface{}) {
 
 // Debug prints some debug if ELDA_DEBUD env var defined
 func Debug(format string, args ...interface{}) {
-	if _, ok := os.LookupEnv("ELDA_DEBUG"); ok {
+	if def.Debug {
 		genlog("DEBUG", format, args...)
 	}
 }

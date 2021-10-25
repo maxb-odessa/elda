@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([elda], [0.0.2], [maxb@tutamail.com])
+AC_INIT([elda], [0.0.3], [maxb@tutamail.com])
 AC_CONFIG_SRCDIR([])
 AC_PREFIX_DEFAULT([$HOME/.local])
 

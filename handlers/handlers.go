@@ -3,12 +3,11 @@ package handlers
 import (
 	"reflect"
 
-	"elda/handlers/terminal"
-
 	"elda/handlers/filein"
-	"elda/handlers/ticker"
-
 	"elda/handlers/fileout"
+	"elda/handlers/tcp"
+	"elda/handlers/terminal"
+	"elda/handlers/ticker"
 )
 
 type Handler interface {
@@ -25,11 +24,10 @@ var registeredHandlers []Handler
 func init() {
 	registeredHandlers = []Handler{
 		terminal.Register(),
-
 		ticker.Register(),
-
 		filein.Register(),
 		fileout.Register(),
+		tcp.Register(),
 	}
 }
 

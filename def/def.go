@@ -18,15 +18,14 @@ const (
 	HANDLER_TYPE_ACTION = 0x02
 )
 
-var ConfFile string
+var (
+	ConfFile string = os.Getenv("HOME") + "/" + ".local/etc/elda.conf"
+	Debug    bool   = false
+)
 
 type ChanMsg struct {
 	Name string
 	Data string
-}
-
-func init() {
-	ConfFile = os.Getenv("HOME") + "/" + ".local/etc/elda.conf"
 }
 
 func GetStrVar(vars map[string]string, varname string) (string, error) {

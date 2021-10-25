@@ -87,6 +87,15 @@ action
     # create if missing?
     var create yes
 
+# TCP socket writing action
+action
+    # action name, free word
+    name EDPAD-REMOTE
+    # tcp handler
+    handler tcp
+    # remote host and port
+    var remote 192.168.100.115:12345
+
 
 # event waits for data from all defined sources and calls configured actions
 # but first captured source data must match event pattern (pcre regexp)
