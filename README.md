@@ -7,7 +7,7 @@ Data sources are: stdin, file or internal ticker.
 Actions are: stdout or file.
 See comments in elda.conf comments for configuration params.
 
-**Elda** is supposed to run in conjunction with [x52mfd](https://github.com/vesemir-odessa/x52mfd) and **edpad** *(work in progress)*
+**Elda** is supposed to run in conjunction with [x52mfd](https://github.com/maxb-odessa/x52mfd) and [edpad](https://github.com/maxb-odessa/edpad)
 
 ### Usage example
 Lets assume we have **elda** config file *elda.conf* with this content:
